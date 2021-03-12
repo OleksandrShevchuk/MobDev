@@ -7,7 +7,6 @@ import android.text.Spanned;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
@@ -39,8 +38,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
-// return back if broken
-        //return PlaceholderFragment.newInstance(position + 1);
 
         Fragment fragment = null;
         switch (position) {
@@ -73,14 +70,14 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 break;
         }
 
-        SpannableStringBuilder sb = new SpannableStringBuilder(" \n" + title); // space added before text for convenience
+        // space added before text for convenience
+        SpannableStringBuilder sb = new SpannableStringBuilder(" \n" + title);
 
-        myDrawable.setBounds(5, 5, myDrawable.getIntrinsicWidth(), myDrawable.getIntrinsicHeight());
+        myDrawable.setBounds(5, 5, myDrawable.getIntrinsicWidth(),
+                myDrawable.getIntrinsicHeight());
         ImageSpan span = new ImageSpan(myDrawable, DynamicDrawableSpan.ALIGN_BASELINE);
         sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sb;
-
-       // return mContext.getResources().getString(TAB_TITLES[position]);
     }
 
 

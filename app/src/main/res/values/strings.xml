@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">MobDev</string>
     <string name="tab_text_1">Main</string>
-    <string name="tab_text_2">Second</string>
+    <string name="tab_text_2">Drawing</string>
     <string name="mainLable">Шевчук Олександр\nГрупа ІО-82\nЗК ІО-8226</string>
     <string name="inProgress">This tab is in progress yet.\nThanks for patience.</string>
+    <string name="switchGraphsOff">Графік</string>
+    <string name="switchGraphsOn">Діаграма</string>
 </resources>
