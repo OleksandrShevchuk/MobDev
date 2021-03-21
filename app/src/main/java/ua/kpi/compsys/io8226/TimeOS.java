@@ -217,14 +217,24 @@ public class TimeOS {
         String partOfTheDay;
 
         if (this.hours >= 12) {
-            if (this.hours - 12 < 10)
+            if (this.hours - 12 < 10 && this.hours != 12) {
                 hours += "0";
-            hours += this.hours - 12;
+                hours += this.hours - 12;
+            } else if (this.hours == 12) {
+                hours += 12;
+            } else {
+                hours += this.hours - 12;
+            }
             partOfTheDay = "PM";
-        } else  {
-            if (this.hours < 10)
+        } else {
+            if (this.hours < 10 && this.hours != 0) {
                 hours += "0";
-            hours += this.hours;
+                hours += this.hours;
+            } else if (this.hours == 0) {
+                hours += 12;
+            } else {
+                hours += this.hours;
+            }
             partOfTheDay = "AM";
         }
 

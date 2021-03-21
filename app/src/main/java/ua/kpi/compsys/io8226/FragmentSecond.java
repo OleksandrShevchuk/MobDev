@@ -75,6 +75,15 @@ public class FragmentSecond extends Fragment {
         System.out.println(TimeOS.subtract2Times(time1, time3));
 
 
+        // Tests that has been added after corrections
+        TimeOS midnight = new TimeOS(0,0,0);
+        TimeOS middleOfTheDay = new TimeOS(12,0,0);
+        System.out.println(TimeOS.subtract2Times(middleOfTheDay, middleOfTheDay));
+        System.out.println(TimeOS.add2Times(middleOfTheDay, middleOfTheDay));
+        System.out.println(TimeOS.subtract2Times(midnight, middleOfTheDay));
+        System.out.println(TimeOS.add2Times(midnight, middleOfTheDay));
+
+
         // -------------------------------------------------------------------
 
         // Inflate the layout for this fragment
