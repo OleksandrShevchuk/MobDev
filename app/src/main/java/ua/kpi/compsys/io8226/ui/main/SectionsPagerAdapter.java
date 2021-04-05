@@ -13,9 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import ua.kpi.compsys.io8226.FragmentMain;
-import ua.kpi.compsys.io8226.FragmentSecond;
+import ua.kpi.compsys.io8226.FragmentLabel;
+import ua.kpi.compsys.io8226.FragmentMoviesList;
+import ua.kpi.compsys.io8226.FragmentDrawing;
 import ua.kpi.compsys.io8226.R;
+
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -24,7 +26,8 @@ import ua.kpi.compsys.io8226.R;
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
+    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2,
+            R.string.tab_text_3};
     private final Context mContext;
     Drawable myDrawable;
     String title;
@@ -42,11 +45,13 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new FragmentMain();
+                fragment = new FragmentLabel();
                 break;
             case 1:
-                fragment = new FragmentSecond();
+                fragment = new FragmentDrawing();
                 break;
+            case 2:
+                fragment = new FragmentMoviesList();
         }
         return fragment;
     }
@@ -64,6 +69,11 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 myDrawable = mContext.getResources().
                         getDrawable(R.drawable.ic_tab_second);
                 title = mContext.getResources().getString(TAB_TITLES[1]);
+                break;
+            case 2:
+                myDrawable = mContext.getResources().
+                        getDrawable(R.drawable.ic_tab_movies_list);
+                title = mContext.getResources().getString(TAB_TITLES[2]);
                 break;
             default:
                 //TODO: handle default selection
@@ -83,7 +93,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
-        return 2;
+        // Show 3 total pages.
+        return 3;
     }
 }

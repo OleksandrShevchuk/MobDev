@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FragmentSecond">
+    tools:context=".FragmentDrawing">
 
 
     <com.llollox.androidtoggleswitch.widgets.ToggleSwitch
         android:id="@+id/toggleGraphs"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="200dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="200dp"
-        android:textSize="17sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:textAlignment="center"
+        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/coordPlot"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="wrap"
@@ -30,10 +30,6 @@
         android:id="@+id/coordPlot"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_default="spread"

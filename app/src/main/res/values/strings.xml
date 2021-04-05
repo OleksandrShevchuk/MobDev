@@ -2,8 +2,15 @@
     <string name="app_name">MobDev</string>
     <string name="tab_text_1">Main</string>
     <string name="tab_text_2">Drawing</string>
+    <string name="tab_text_3">Movies List</string>
     <string name="mainLable">Шевчук Олександр\nГрупа ІО-82\nЗК ІО-8226</string>
     <string name="inProgress">This tab is in progress yet.\nThanks for patience.</string>
     <string name="switchGraphsOff">Графік</string>
     <string name="switchGraphsOn">Діаграма</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="poster_description">It is a blueprint that either empty or contains an image depending on if the list item has a poster.</string>
+    <string name="title">title</string>
+    <string name="year">year</string>
+    <string name="imdbid">imdbID</string>
+    <string name="type">type</string>
 </resources>

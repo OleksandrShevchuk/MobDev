@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import ua.kpi.compsys.io8226.R;
 
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -46,7 +47,7 @@ public class PlaceholderFragment extends Fragment {
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_main, container, false);
+        View root = inflater.inflate(R.layout.fragment_label, container, false);
         final TextView mainLable = root.findViewById(R.id.mainLable_textView);
         pageViewModel.getText().observe(this, new Observer<String>() {
             @Override

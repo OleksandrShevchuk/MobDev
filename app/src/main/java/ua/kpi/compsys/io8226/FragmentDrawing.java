@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FragmentSecond extends Fragment {
+public class FragmentDrawing extends Fragment {
     private GraphView coordPlot;
     private PieChart pieChart;
     private ToggleSwitch toggleSwitch;
@@ -33,7 +33,7 @@ public class FragmentSecond extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_second, container, false);
+        return inflater.inflate(R.layout.fragment_drawing, container, false);
     }
 
     @Override
