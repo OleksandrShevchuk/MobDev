@@ -48,8 +48,10 @@ public class FragmentMoviesList extends Fragment {
                 years, imdbIDs, types, posters);
         moviesListView.setAdapter(adapterMoviesList);
 
-        parseFromFile("movies_list");
-        assignFields(moviesList);
+        if (adapterMoviesList.getCount() == 0) {
+            parseFromFile("movies_list");
+            assignFields(moviesList);
+        }
     }
 
 

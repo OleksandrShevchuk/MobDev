@@ -52,6 +52,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 break;
             case 2:
                 fragment = new FragmentMoviesList();
+                break;
         }
         return fragment;
     }
