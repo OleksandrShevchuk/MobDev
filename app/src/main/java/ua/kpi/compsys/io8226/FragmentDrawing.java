@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,9 @@ import java.util.List;
 
 
 public class FragmentDrawing extends Fragment {
+    private static short togglePosition;
     private GraphView coordPlot;
     private PieChart pieChart;
-    private ToggleSwitch toggleSwitch;
 
 
     @Override
@@ -40,7 +41,7 @@ public class FragmentDrawing extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         coordPlot = (GraphView) view.findViewById(R.id.coordPlot);
         pieChart = (PieChart) view.findViewById(R.id.pieChart);
-        toggleSwitch = (ToggleSwitch) view.findViewById(R.id.toggleGraphs);
+        ToggleSwitch toggleSwitch = (ToggleSwitch) view.findViewById(R.id.toggleGraphs);
         pieChart.setUsePercentValues(true);
 
         toggleSwitch.setOnChangeListener(new ToggleSwitch.OnChangeListener() {
@@ -48,15 +49,22 @@ public class FragmentDrawing extends Fragment {
             public void onToggleSwitchChanged(int position) {
                 if (position == 0) {
                     drawPlot();
+                    togglePosition = 0;
                 } else {
                     drawCircDiagram();
+                    togglePosition = 1;
                 }
             }
         });
 
-        toggleSwitch.setCheckedPosition(0);
-        drawPlot();
+        toggleSwitch.setCheckedPosition(togglePosition);
+        if (togglePosition == 0) {
+            drawPlot();
+        } else {
+            drawCircDiagram();
+        }
     }
+
 
     public void drawPlot() {
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
@@ -71,6 +79,7 @@ public class FragmentDrawing extends Fragment {
             y = Math.pow(Math.E, x);
             series.appendData(new DataPoint(x, y), true, 1200);
         }
+
         series.setAnimated(true);
         series.setColor(Color.BLUE);
         coordPlot.removeAllSeries();

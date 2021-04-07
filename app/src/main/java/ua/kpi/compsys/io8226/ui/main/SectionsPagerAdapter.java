@@ -63,12 +63,12 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
                 myDrawable = mContext.getResources().
-                        getDrawable(R.drawable.ic_tab_main);
+                        getDrawable(R.drawable.ic_tab_label);
                 title = mContext.getResources().getString(TAB_TITLES[0]);
                 break;
             case 1:
                 myDrawable = mContext.getResources().
-                        getDrawable(R.drawable.ic_tab_second);
+                        getDrawable(R.drawable.ic_tab_drawing);
                 title = mContext.getResources().getString(TAB_TITLES[1]);
                 break;
             case 2:

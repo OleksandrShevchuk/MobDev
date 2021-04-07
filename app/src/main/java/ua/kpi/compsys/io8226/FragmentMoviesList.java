@@ -64,7 +64,7 @@ public class FragmentMoviesList extends Fragment {
             br = new BufferedReader(new InputStreamReader(getFileLocation(fileName)));
             moviesList = gson.fromJson(br, MoviesList.class);
 
-         } catch (Exception e) {
+        } catch (Exception e) {
            e.printStackTrace();
         } finally {
             if (br != null) {

@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendMail() {
-
         Intent send = new Intent(Intent.ACTION_SENDTO);
         String uriText = "mailto:" + Uri.encode("legolasokay@gmail.com") +
                 "?subject=" + Uri.encode("Відгук до MobDev додатку");
@@ -47,6 +46,5 @@ public class MainActivity extends AppCompatActivity {
         send.setData(uri);
 
         startActivity(Intent.createChooser(send, "Залиште відгук:"));
-
     }
 }
