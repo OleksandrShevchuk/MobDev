@@ -6,15 +6,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
 
-public class AdapterMoviesList extends ArrayAdapter<String> {
+public class AdapterMoviesList extends ArrayAdapter<String> implements Filterable {
 
     ArrayList<String> titles;
+    ArrayList<String> titlesFiltered;
     ArrayList<String> years;
     ArrayList<String> imdbIDs;
     ArrayList<String> types;
@@ -22,12 +28,14 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
 
     Context mContext;
 
+
     public AdapterMoviesList(Context context, ArrayList<String> titles, ArrayList<String> years,
                              ArrayList<String> imdbIDs, ArrayList<String> types,
                              ArrayList<String> posters) {
 
         super(context, R.layout.listview_item);
         this.titles = titles;
+        this.titlesFiltered = titles;
         this.years = years;
         this.imdbIDs = imdbIDs;
         this.types = types;
@@ -36,9 +44,10 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
         this.mContext = context;
     }
 
+
     @Override
     public int getCount() {
-        return titles.size();
+        return titlesFiltered.size();
     }
 
     @Override
@@ -77,6 +86,48 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
         }
 
         return convertView;
+    }
+
+    public ArrayList<String> getTitles() {
+        return titles;
+    }
+
+    @NonNull
+    @Override
+    public Filter getFilter() {
+        Filter filter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                FilterResults filterResults = new FilterResults();
+
+                if (charSequence == null || charSequence.length() == 0) {
+                    filterResults.count = titles.size();
+                    filterResults.values = titles;
+                } else {
+                    String searchStr = charSequence.toString().toLowerCase();
+                    ArrayList<String> resultData = new ArrayList<>();
+
+                    for (String title: titles) {
+                        if (title.contains(searchStr)) {
+                            resultData.add(title);
+                        }
+
+                        filterResults.count = resultData.size();
+                        filterResults.values = resultData;
+                    }
+                }
+
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                titlesFiltered = (ArrayList<String>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+
+        return filter;
     }
 
     private static class ViewHolder {

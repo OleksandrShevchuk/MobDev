@@ -17,4 +17,8 @@ public class MoviesList {
     public void setMovies(List<Movie> movies) {
         this.movies = movies;
     }
+
+    public Movie getMovieByPosition(int position) {
+        return movies.get(position);
+    }
 }
