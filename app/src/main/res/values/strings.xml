@@ -29,4 +29,5 @@
     <string name="writer">Writer:</string>
     <string name="votes">Votes:</string>
     <string name="rated">Rated:</string>
+    <string name="no_movies_found">No movies found</string>
 </resources>

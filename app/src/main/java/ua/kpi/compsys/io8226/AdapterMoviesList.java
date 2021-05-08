@@ -6,49 +6,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 
+import ua.kpi.compsys.io8226.model.Movie;
 
-public class AdapterMoviesList extends ArrayAdapter<String> implements Filterable {
 
-    ArrayList<String> titles;
-    ArrayList<String> titlesFiltered;
-    ArrayList<String> years;
-    ArrayList<String> imdbIDs;
-    ArrayList<String> types;
-    ArrayList<String> posters;
+public class AdapterMoviesList extends ArrayAdapter<String> {
 
+    ArrayList<Movie> movies;
     Context mContext;
 
 
-    public AdapterMoviesList(Context context, ArrayList<String> titles, ArrayList<String> years,
-                             ArrayList<String> imdbIDs, ArrayList<String> types,
-                             ArrayList<String> posters) {
-
+    public AdapterMoviesList(Context context, ArrayList<Movie> movies) {
         super(context, R.layout.listview_item);
-        this.titles = titles;
-        this.titlesFiltered = titles;
-        this.years = years;
-        this.imdbIDs = imdbIDs;
-        this.types = types;
-        this.posters = posters;
-
+        this.movies = movies;
         this.mContext = context;
     }
 
-
-    @Override
-    public int getCount() {
-        return titlesFiltered.size();
-    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -71,13 +48,13 @@ public class AdapterMoviesList extends ArrayAdapter<String> implements Filterabl
                 mViewHolder = (ViewHolder) convertView.getTag();
             }
 
-            mViewHolder.mTitle.setText(titles.get(position));
-            mViewHolder.mYear.setText(years.get(position));
-            mViewHolder.mImdbID.setText(imdbIDs.get(position));
-            mViewHolder.mType.setText(types.get(position));
+            mViewHolder.mTitle.setText(movies.get(position).getTitle());
+            mViewHolder.mYear.setText(movies.get(position).getYear());
+            mViewHolder.mImdbID.setText(movies.get(position).getImdbID());
+            mViewHolder.mType.setText(movies.get(position).getType());
 
             mViewHolder.mPoster.setImageResource(mContext.getResources().getIdentifier(
-                    posters.get(position), "drawable", mContext.getPackageName()));
+                    movies.get(position).getPoster(), "drawable", mContext.getPackageName()));
 
         } catch (Resources.NotFoundException | IndexOutOfBoundsException |
                 NumberFormatException e) {
@@ -88,47 +65,17 @@ public class AdapterMoviesList extends ArrayAdapter<String> implements Filterabl
         return convertView;
     }
 
-    public ArrayList<String> getTitles() {
-        return titles;
-    }
-
-    @NonNull
     @Override
-    public Filter getFilter() {
-        Filter filter = new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-                FilterResults filterResults = new FilterResults();
-
-                if (charSequence == null || charSequence.length() == 0) {
-                    filterResults.count = titles.size();
-                    filterResults.values = titles;
-                } else {
-                    String searchStr = charSequence.toString().toLowerCase();
-                    ArrayList<String> resultData = new ArrayList<>();
-
-                    for (String title: titles) {
-                        if (title.contains(searchStr)) {
-                            resultData.add(title);
-                        }
-
-                        filterResults.count = resultData.size();
-                        filterResults.values = resultData;
-                    }
-                }
-
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                titlesFiltered = (ArrayList<String>) filterResults.values;
-                notifyDataSetChanged();
-            }
-        };
-
-        return filter;
+    public int getCount() {
+        return movies.size();
     }
+
+    public void update(ArrayList<Movie> results) {
+        movies = new ArrayList<>();
+        movies.addAll(results);
+        notifyDataSetChanged();
+    }
+
 
     private static class ViewHolder {
         TextView mTitle;

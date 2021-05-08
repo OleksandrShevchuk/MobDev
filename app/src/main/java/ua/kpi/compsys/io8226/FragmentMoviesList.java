@@ -1,24 +1,18 @@
 package ua.kpi.compsys.io8226;
 
-import android.app.Activity;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.appcompat.widget.SearchView;
 
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -38,14 +32,9 @@ public class FragmentMoviesList extends Fragment {
     MoviesList moviesList;
     ListView moviesListView;
     AdapterMoviesList adapterMoviesList;
-    View view;
     SearchView searchView;
-
-    ArrayList<String> titles = new ArrayList<>();
-    ArrayList<String> years = new ArrayList<>();
-    ArrayList<String> imdbIDs = new ArrayList<>();
-    ArrayList<String> types = new ArrayList<>();
-    ArrayList<String> posters = new ArrayList<>();
+    ArrayList<Movie> movies = new ArrayList<>();
+    TextView noResults;
 
 
     @Override
@@ -57,18 +46,16 @@ public class FragmentMoviesList extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        this.view = view;
-        searchView = getActivity().findViewById(R.id.search_view);
-        searchView.setVisibility(View.VISIBLE);
 
+        noResults = view.findViewById(R.id.textView_noResults);
+        searchView =  view.findViewById(R.id.search_view);
         moviesListView = (ListView) view.findViewById(R.id.moviesListView);
-        adapterMoviesList = new AdapterMoviesList(this.getContext(), titles,
-                years, imdbIDs, types, posters);
+        adapterMoviesList = new AdapterMoviesList(this.getContext(), movies);
         moviesListView.setAdapter(adapterMoviesList);
 
         if (adapterMoviesList.getCount() == 0) {
             parseFromJson("movies_list");
-            assignFields(moviesList);
+            movies.addAll(moviesList.getMovies());
         }
 
         moviesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -103,6 +90,35 @@ public class FragmentMoviesList extends Fragment {
             }
         }
         );
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                ArrayList<Movie> results = new ArrayList<>();
+
+                for (Movie movie: movies) {
+                    if (movie.getTitle().toLowerCase().contains(s.toLowerCase()))
+                        results.add(movie);
+                }
+
+                adapterMoviesList.update(results);
+
+                if (results.size() == 0) {
+                    moviesListView.setVisibility(View.GONE);
+                    noResults.setVisibility(View.VISIBLE);
+                } else {
+                    noResults.setVisibility(View.GONE);
+                    moviesListView.setVisibility(View.VISIBLE);
+                }
+
+                return true;
+            }
+        });
     }
 
 
@@ -167,89 +183,8 @@ public class FragmentMoviesList extends Fragment {
         }
     }
 
-    private void assignFields(MoviesList moviesList) {
-        for (Movie movie : moviesList.getMovies()) {
-            try {
-                if (!movie.getTitle().trim().equals(""))
-                    titles.add(movie.getTitle());
-                else
-                    titles.add("");
-                if (!movie.getYear().trim().equals(""))
-                    years.add(movie.getYear());
-                else
-                    years.add("");
-                if (!movie.getImdbID().trim().equals(""))
-                    imdbIDs.add(movie.getImdbID());
-                else
-                    imdbIDs.add("");
-                if (!movie.getType().trim().equals(""))
-                    types.add(movie.getType());
-                else
-                    types.add("");
-                if (!movie.getPoster().trim().equals(""))
-                    posters.add(movie.getPoster());
-                else
-                    posters.add("");
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private InputStream getFileLocation(String fileName) {
         return getResources().openRawResource(getResources().getIdentifier(fileName,
                 "raw", this.getContext().getPackageName()));
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-        inflater.inflate(R.menu.menu, menu);
-
-
-
-      //  SearchManager searchManager =
-      //          (SearchManager) this.getContext().getSystemService(Context.SEARCH_SERVICE);
-        MenuItem menuItem = menu.findItem(R.id.search_view);
-        SearchView searchView = new SearchView(
-                ((MainActivity) view.getContext()).getSupportActionBar().getThemedContext());
-       // searchView.setSearchableInfo(searchManager.getSearchableInfo());
-
-        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW |
-                MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        menuItem.setActionView(searchView);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });
-
-        searchView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
-
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.search_view) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

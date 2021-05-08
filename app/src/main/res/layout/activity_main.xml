@@ -35,9 +35,9 @@
                 android:icon="@android:drawable/ic_menu_search"
                 android:layoutDirection="rtl"
                 android:title="@string/app_name"
-                android:visibility="visible"
+                android:visibility="invisible"
                 app:actionViewClass="android.widget.SearchView"
-                app:showAsAction="collapseActionView|ifRoom"></androidx.appcompat.widget.SearchView>
+                app:showAsAction="collapseActionView|ifRoom" />
 
         </LinearLayout>
 
