@@ -9,12 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MobDev">
-        <activity android:name=".MovieDetailsActivity"> </activity>
+        <activity android:name=".MovieAdditionActivity"></activity>
+        <activity android:name=".MovieDetailsActivity"></activity>
         <activity
             android:name=".MainActivity"
+            android:imeOptions="flagNoExtractUi"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MobDev.NoActionBar"
-            android:imeOptions="flagNoExtractUi" >
+            android:theme="@style/Theme.MobDev.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -54,6 +54,12 @@ public class Movie {
         this.poster = poster;
     }
 
+    public Movie(String title, String year, String imdbID, String type) {
+        this.title = title;
+        this.year = year;
+        this.imdbID = imdbID;
+        this.type = type;
+    }
 
     public String getTitle() {
         return title;

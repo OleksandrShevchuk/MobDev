@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ public class FragmentMoviesList extends Fragment {
     SearchView searchView;
     ArrayList<Movie> movies = new ArrayList<>();
     TextView noResults;
+    ImageButton addMovieButton;
 
 
     @Override
@@ -51,12 +53,23 @@ public class FragmentMoviesList extends Fragment {
         searchView =  view.findViewById(R.id.search_view);
         moviesListView = (ListView) view.findViewById(R.id.moviesListView);
         adapterMoviesList = new AdapterMoviesList(this.getContext(), movies);
+        addMovieButton = (ImageButton) view.findViewById(R.id.button_addMovieButton);
         moviesListView.setAdapter(adapterMoviesList);
+
+       // searchView.setImeOptions(searchView.getImeOptions() | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (adapterMoviesList.getCount() == 0) {
             parseFromJson("movies_list");
             movies.addAll(moviesList.getMovies());
         }
+
+        addMovieButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), MovieAdditionActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
 
         moviesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -121,6 +134,21 @@ public class FragmentMoviesList extends Fragment {
         });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (data != null) {
+            String title = data.getStringExtra("title");
+            String year = String.valueOf(data.getIntExtra("year", 666));
+            String imdbId = data.getStringExtra("imdbId");
+            String type = data.getStringExtra("type");
+
+            Movie movie = new Movie(title, year, imdbId, type);
+            movie.setPoster("");
+            movies.add(movie);
+            moviesList.getMovies().add(movie);
+            adapterMoviesList.update(movies);
+        }
+    }
 
     //Parses JSON file with primary film characteristics.
     private void parseFromJson(String fileName) {
