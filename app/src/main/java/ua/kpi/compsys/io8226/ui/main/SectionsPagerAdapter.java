@@ -13,9 +13,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import ua.kpi.compsys.io8226.FragmentLabel;
-import ua.kpi.compsys.io8226.FragmentMoviesList;
-import ua.kpi.compsys.io8226.FragmentDrawing;
+import ua.kpi.compsys.io8226.tabs.tab_gallery.FragmentGallery;
+import ua.kpi.compsys.io8226.tabs.tab_label.FragmentLabel;
+import ua.kpi.compsys.io8226.tabs.tab_movies.FragmentMoviesList;
+import ua.kpi.compsys.io8226.tabs.tab_drawing.FragmentDrawing;
 import ua.kpi.compsys.io8226.R;
 
 
@@ -27,7 +28,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2,
-            R.string.tab_text_3};
+            R.string.tab_text_3, R.string.tab_text_4};
     private final Context mContext;
     Drawable myDrawable;
     String title;
@@ -53,6 +54,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
             case 2:
                 fragment = new FragmentMoviesList();
                 break;
+            case 3:
+                fragment = new FragmentGallery();
+                break;
         }
         return fragment;
     }
@@ -76,9 +80,12 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                         getDrawable(R.drawable.ic_tab_movies_list);
                 title = mContext.getResources().getString(TAB_TITLES[2]);
                 break;
-            default:
-                //TODO: handle default selection
+            case 3:
+                myDrawable = mContext.getResources().
+                        getDrawable(R.drawable.ic_tab_gallery);
+                title = mContext.getResources().getString(TAB_TITLES[3]);
                 break;
+
         }
 
         // space added before text for convenience
@@ -94,7 +101,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        // Show 3 total pages.
-        return 3;
+        return TAB_TITLES.length;
     }
 }

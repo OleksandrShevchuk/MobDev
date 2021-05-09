@@ -1,4 +1,4 @@
-package ua.kpi.compsys.io8226;
+package ua.kpi.compsys.io8226.tabs.tab_movies;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,8 +28,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import ua.kpi.compsys.io8226.model.Movie;
-import ua.kpi.compsys.io8226.model.MoviesList;
+import ua.kpi.compsys.io8226.R;
+import ua.kpi.compsys.io8226.tabs.tab_movies.model.Movie;
+import ua.kpi.compsys.io8226.tabs.tab_movies.model.MoviesList;
 
 
 public class FragmentMoviesList extends Fragment {

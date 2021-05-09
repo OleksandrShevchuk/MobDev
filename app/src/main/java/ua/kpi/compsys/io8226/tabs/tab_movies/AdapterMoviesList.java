@@ -1,4 +1,4 @@
-package ua.kpi.compsys.io8226;
+package ua.kpi.compsys.io8226.tabs.tab_movies;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -11,7 +11,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import ua.kpi.compsys.io8226.model.Movie;
+import ua.kpi.compsys.io8226.R;
+import ua.kpi.compsys.io8226.tabs.tab_movies.model.Movie;
 
 
 public class AdapterMoviesList extends ArrayAdapter<String> {

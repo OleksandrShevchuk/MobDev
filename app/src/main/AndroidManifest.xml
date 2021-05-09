@@ -9,8 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MobDev">
-        <activity android:name=".MovieAdditionActivity"></activity>
-        <activity android:name=".MovieDetailsActivity"></activity>
+        <activity android:name=".tabs.tab_movies.MovieAdditionActivity"></activity>
+        <activity android:name=".tabs.tab_movies.MovieDetailsActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:imeOptions="flagNoExtractUi"

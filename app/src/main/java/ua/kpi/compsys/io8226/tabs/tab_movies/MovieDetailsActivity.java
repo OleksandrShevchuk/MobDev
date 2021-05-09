@@ -1,10 +1,12 @@
-package ua.kpi.compsys.io8226;
+package ua.kpi.compsys.io8226.tabs.tab_movies;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import ua.kpi.compsys.io8226.R;
 
 
 public class MovieDetailsActivity extends AppCompatActivity {

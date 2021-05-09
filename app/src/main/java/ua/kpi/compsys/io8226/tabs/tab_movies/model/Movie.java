@@ -1,4 +1,4 @@
-package ua.kpi.compsys.io8226.model;
+package ua.kpi.compsys.io8226.tabs.tab_movies.model;
 
 import com.google.gson.annotations.SerializedName;
 

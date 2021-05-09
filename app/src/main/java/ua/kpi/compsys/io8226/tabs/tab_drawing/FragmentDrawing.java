@@ -1,4 +1,4 @@
-package ua.kpi.compsys.io8226;
+package ua.kpi.compsys.io8226.tabs.tab_drawing;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,6 +22,8 @@ import com.llollox.androidtoggleswitch.widgets.ToggleSwitch;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ua.kpi.compsys.io8226.R;
 
 
 public class FragmentDrawing extends Fragment {

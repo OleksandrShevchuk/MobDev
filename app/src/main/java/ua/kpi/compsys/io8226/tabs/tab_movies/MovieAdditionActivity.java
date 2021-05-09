@@ -1,4 +1,4 @@
-package ua.kpi.compsys.io8226;
+package ua.kpi.compsys.io8226.tabs.tab_movies;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import ua.kpi.compsys.io8226.R;
 
 
 public class MovieAdditionActivity extends AppCompatActivity {
