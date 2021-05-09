@@ -1,5 +1,7 @@
 package ua.kpi.compsys.io8226.tabs.tab_movies.model;
 
+import android.graphics.Bitmap;
+
 import com.google.gson.annotations.SerializedName;
 
 
@@ -59,6 +61,10 @@ public class Movie {
         this.year = year;
         this.imdbID = imdbID;
         this.type = type;
+    }
+
+    public Movie() {
+
     }
 
     public String getTitle() {

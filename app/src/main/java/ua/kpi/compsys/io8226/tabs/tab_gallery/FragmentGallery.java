@@ -1,24 +1,33 @@
 package ua.kpi.compsys.io8226.tabs.tab_gallery;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
+import android.annotation.SuppressLint;
+import android.net.ParseException;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.constraintlayout.widget.Guideline;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 import ua.kpi.compsys.io8226.R;
@@ -26,12 +35,15 @@ import ua.kpi.compsys.io8226.R;
 
 public class FragmentGallery extends Fragment {
 
-    private static final int RESULT_LOAD_IMAGE = 2;
+    private static final String API_KEY = "19193969-87191e5db266905fe8936d565";
+    private static final String REQUEST = "yellow+flowers";
+    private static final int COUNT = 27;
 
+    private InternetImagesList internetImagesList;
     private ArrayList<ImageView> imageViews;
     private ArrayList<ArrayList<Object>> placeholders;
-    private ScrollView scrollView;
     private LinearLayout linearLayout;
+    private ProgressBar progressBar;
     private View view;
 
 
@@ -41,18 +53,16 @@ public class FragmentGallery extends Fragment {
         view = inflater.inflate(R.layout.fragment_gallery, container, false);
         setRetainInstance(true);
 
-        scrollView = view.findViewById(R.id.scrollview_gallery);
         linearLayout = view.findViewById(R.id.linear_main);
 
+        internetImagesList = new InternetImagesList();
         imageViews = new ArrayList<>();
         placeholders = new ArrayList<>();
 
-        ImageButton btnAddImage = view.findViewById(R.id.btn_add_image);
-        btnAddImage.setOnClickListener(v -> {
-            Intent gallery = new Intent(Intent.ACTION_GET_CONTENT);
-            gallery.setType("image/*");
-            startActivityForResult(gallery, RESULT_LOAD_IMAGE);
-        });
+        progressBar = (ProgressBar) view.findViewById(R.id.galleryProgressBar);
+
+        AsyncLoadImagesInfo asyncLoadImagesInfo = new AsyncLoadImagesInfo();
+        asyncLoadImagesInfo.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         for (ImageView image : imageViews) {
             image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -60,23 +70,6 @@ public class FragmentGallery extends Fragment {
 
         return view;
     }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK) {
-            Uri imageUri = data.getData();
-            putImage(linearLayout, imageViews, placeholders, scrollView, imageUri);
-        }
-    }
-
 
     private Guideline createGuideline(int orientation, float percent){
         Guideline guideline = new Guideline(view.getContext());
@@ -95,11 +88,24 @@ public class FragmentGallery extends Fragment {
     }
 
     private void putImage(LinearLayout scrollMain, ArrayList<ImageView> allImages,
-                          ArrayList<ArrayList<Object>> placeholderList,
-                          ScrollView scrollView, Uri imageUri) {
+                          ArrayList<ArrayList<Object>> placeholderList, String imageUrl) {
 
         ImageView newImage = new ImageView(view.getContext());
-        newImage.setImageURI(imageUri);
+
+        progressBar.setVisibility(View.VISIBLE);
+        Picasso.get().load(imageUrl).into(newImage, new com.squareup.picasso.Callback() {
+
+            @Override
+            public void onSuccess() {
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+
         newImage.setBackgroundResource(R.color.image_background);
 
         ConstraintLayout.LayoutParams imageParams =
@@ -109,6 +115,11 @@ public class FragmentGallery extends Fragment {
         imageParams.dimensionRatio = "1";
         newImage.setLayoutParams(imageParams);
         newImage.setId(newImage.hashCode());
+
+        imageParams.setMargins(3, 3, 3, 3);
+        imageParams.dimensionRatio = "1";
+        progressBar.setLayoutParams(imageParams);
+        progressBar.setId(newImage.hashCode());
 
         ConstraintLayout tmpLayout = null;
         ConstraintSet tmpSet = null;
@@ -292,10 +303,103 @@ public class FragmentGallery extends Fragment {
         }
 
         allImages.add(newImage);
-        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
+
 
     private Object getConstraint(int index, ArrayList<ArrayList<Object>> list){
         return list.get(list.size()-1).get(index);
+    }
+
+
+    @SuppressLint("StaticFieldLeak")
+    public class AsyncLoadImagesInfo extends AsyncTask<Void, Void, ArrayList<InternetImage>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        protected ArrayList<InternetImage> doInBackground(Void... voids) {
+            return search();
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        protected void onPostExecute(ArrayList<InternetImage> images) {
+            super.onPostExecute(images);
+            internetImagesList.getInternetImages().addAll(images);
+
+            for (InternetImage image : internetImagesList.getInternetImages()) {
+                String imageUrl = image.getWebFormatUrl();
+                putImage(linearLayout, imageViews, placeholders, imageUrl);
+            }
+
+            progressBar.setVisibility(View.GONE);
+        }
+
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        private ArrayList<InternetImage> search() {
+            String url = String.format(
+                    "https://pixabay.com/api/?key=%s&q=\"%s\"&image_type=photo&per_page=%d",
+                    API_KEY,
+                    REQUEST,
+                    COUNT);
+
+            try {
+                return parseImagesInfo(sendRequest(url));
+
+            } catch (ParseException e) {
+                System.err.println("Incorrect content of JSON file!");
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        private ArrayList<InternetImage> parseImagesInfo(String jsonText)
+                throws ParseException {
+
+            ArrayList<InternetImage> results = new ArrayList<>();
+            Gson gson = new Gson();
+
+            try {
+                InternetImagesList imagesList = gson.fromJson(jsonText, InternetImagesList.class);
+                results.addAll(imagesList.getInternetImages());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return results;
+        }
+
+        private String sendRequest(String url) {
+            StringBuilder result = new StringBuilder();
+
+            try {
+                URL getReq = new URL(url);
+                URLConnection movieConnection = getReq.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                        movieConnection.getInputStream()));
+                String inputLine;
+
+                while ((inputLine = in.readLine()) != null)
+                    result.append(inputLine).append("\n");
+
+                in.close();
+
+            } catch (MalformedURLException e) {
+                System.err.println(String.format("Incorrect URL <%s>!", url));
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return result.toString();
+        }
     }
 }

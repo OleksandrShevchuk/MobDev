@@ -2,12 +2,18 @@ package ua.kpi.compsys.io8226.tabs.tab_movies;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -43,6 +49,7 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
                 mViewHolder.mImdbID = (TextView) convertView.findViewById(R.id.imdbID);
                 mViewHolder.mType = (TextView) convertView.findViewById(R.id.type);
                 mViewHolder.mPoster = (ImageView) convertView.findViewById(R.id.poster);
+                mViewHolder.mProgressBar = (ProgressBar) convertView.findViewById(R.id.progressBar2);
 
                 convertView.setTag(mViewHolder);
             } else {
@@ -54,8 +61,35 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
             mViewHolder.mImdbID.setText(movies.get(position).getImdbID());
             mViewHolder.mType.setText(movies.get(position).getType());
 
-            mViewHolder.mPoster.setImageResource(mContext.getResources().getIdentifier(
-                    movies.get(position).getPoster(), "drawable", mContext.getPackageName()));
+            if (movies.get(position).getPoster() == null ||
+                    movies.get(position).getPoster().trim().equals("") ||
+                    movies.get(position).getPoster().trim().equals("N/A")) {
+
+                mViewHolder.mPoster.setImageResource(android.R.drawable.ic_media_play);
+
+            } else {
+
+                mViewHolder.mPoster.setVisibility(View.GONE);
+                mViewHolder.mProgressBar.setVisibility(View.VISIBLE);
+
+                ViewHolder finalMViewHolder = mViewHolder;
+                Picasso.get().load(movies.get(position).getPoster()).into(mViewHolder.mPoster,
+                        new com.squareup.picasso.Callback() {
+
+                            @Override
+                            public void onSuccess() {
+                                finalMViewHolder.mProgressBar.setVisibility(View.GONE);
+                                finalMViewHolder.mPoster.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                e.printStackTrace();
+                                finalMViewHolder.mProgressBar.setVisibility(View.GONE);
+                                finalMViewHolder.mPoster.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
 
         } catch (Resources.NotFoundException | IndexOutOfBoundsException |
                 NumberFormatException e) {
@@ -65,6 +99,7 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
 
         return convertView;
     }
+
 
     @Override
     public int getCount() {
@@ -77,6 +112,11 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
         notifyDataSetChanged();
     }
 
+    public void clear() {
+        update(new ArrayList<>());
+        notifyDataSetChanged();
+    }
+
 
     private static class ViewHolder {
         TextView mTitle;
@@ -84,5 +124,6 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
         TextView mImdbID;
         TextView mType;
         ImageView mPoster;
+        ProgressBar mProgressBar;
     }
 }
