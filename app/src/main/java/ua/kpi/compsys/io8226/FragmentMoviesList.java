@@ -3,11 +3,15 @@ package ua.kpi.compsys.io8226;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.appcompat.widget.SearchView;
 
+import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -57,6 +61,7 @@ public class FragmentMoviesList extends Fragment {
         moviesListView.setAdapter(adapterMoviesList);
 
        // searchView.setImeOptions(searchView.getImeOptions() | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        registerForContextMenu(moviesListView);
 
         if (adapterMoviesList.getCount() == 0) {
             parseFromJson("movies_list");
@@ -76,8 +81,6 @@ public class FragmentMoviesList extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 
                 Movie item = moviesList.getMovieByPosition(position);
-                Toast.makeText(view.getContext(), "You selected : " + item.getImdbID(),
-                        Toast.LENGTH_LONG).show();
                 parseFromTxt(item.getImdbID(), item);
 
                 Intent intent = new Intent(view.getContext(), MovieDetailsActivity.class);
@@ -147,6 +150,43 @@ public class FragmentMoviesList extends Fragment {
             movies.add(movie);
             moviesList.getMovies().add(movie);
             adapterMoviesList.update(movies);
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View view,
+                                    @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+
+        super.onCreateContextMenu(menu, view, menuInfo);
+
+        getActivity().getMenuInflater().inflate(R.menu.context_menu_movie, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        AdapterView.AdapterContextMenuInfo menuInfo =
+                (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int selectedItemIndex = (int) adapterMoviesList.getItemId(menuInfo.position);
+
+        switch (item.getItemId()) {
+            case R.id.option_delete:
+                String title = moviesList.getMovies().get(selectedItemIndex).getTitle();
+
+                movies.remove(selectedItemIndex);
+                moviesList.getMovies().remove(selectedItemIndex);
+                adapterMoviesList.update(movies);
+
+                Toast toast = Toast.makeText(getContext(), title + "\nhas been deleted",
+                        Toast.LENGTH_SHORT);
+                TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
+                if (toastMessage != null) {
+                    toastMessage.setGravity(Gravity.CENTER);
+                }
+                toast.show();;
+
+                return true;
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 
