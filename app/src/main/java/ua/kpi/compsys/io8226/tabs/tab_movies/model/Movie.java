@@ -18,6 +18,8 @@ public class Movie {
     @SerializedName("Poster")
     private String poster;
 
+    private Bitmap posterBitmap;
+
     @SerializedName("Rated")
     private String rated;
     @SerializedName("Released")
@@ -63,9 +65,15 @@ public class Movie {
         this.type = type;
     }
 
-    public Movie() {
-
+    public Movie(String title, String year, String imdbID, String type, Bitmap posterBitmap) {
+        this.title = title;
+        this.year = year;
+        this.imdbID = imdbID;
+        this.type = type;
+        this.posterBitmap = posterBitmap;
     }
+
+    public Movie() { }
 
     public String getTitle() {
         return title;
@@ -217,5 +225,13 @@ public class Movie {
 
     public void setProduction(String production) {
         this.production = production;
+    }
+
+    public Bitmap getPosterBitmap() {
+        return posterBitmap;
+    }
+
+    public void setPosterBitmap(Bitmap posterBitmap) {
+        this.posterBitmap = posterBitmap;
     }
 }

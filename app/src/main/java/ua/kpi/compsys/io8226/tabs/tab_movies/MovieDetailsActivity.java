@@ -24,12 +24,17 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 
 import ua.kpi.compsys.io8226.R;
+import ua.kpi.compsys.io8226.repository.App;
+import ua.kpi.compsys.io8226.repository.AppDatabase;
 import ua.kpi.compsys.io8226.tabs.tab_movies.model.Movie;
 
 
 public class MovieDetailsActivity extends AppCompatActivity {
+
+    private static AppDatabase appDatabase;
 
     ScrollView movieDetailsLayout;
     ProgressBar detailedInfoProgressBar;
@@ -52,6 +57,10 @@ public class MovieDetailsActivity extends AppCompatActivity {
     TextView votes;
     TextView rated;
     TextView plot;
+
+    Movie movie;
+    String imdbId;
+
 
     String key = "7e9fe69e";
 
@@ -83,17 +92,21 @@ public class MovieDetailsActivity extends AppCompatActivity {
         rated = (TextView) findViewById(R.id.textView_rated);
         plot = (TextView) findViewById(R.id.textView_plot);
 
+        appDatabase = App.getInstance().getDatabase();
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            if (bundle.getString("poster").trim().equals("") ||
-                    bundle.getString("poster").trim().equals("N/A")) {
+            if (bundle.getString("poster") != null) {
+                if (bundle.getString("poster").trim().equals("") ||
+                        bundle.getString("poster").trim().equals("N/A")) {
 
-                poster.setImageResource(android.R.drawable.ic_media_play);
+                    poster.setImageResource(android.R.drawable.ic_media_play);
+                }
             }
 
-            Movie movie = new Movie();
+            movie = new Movie();
             movie.setImdbID(bundle.getString("imdbId"));
+            imdbId = movie.getImdbID();
             System.out.println(movie.getImdbID());
 
             AsyncLoadDetailedMovieInfo asyncLoadDetailedMovieInfo = new AsyncLoadDetailedMovieInfo();
@@ -102,11 +115,35 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
 
+    public static class AsyncLoadMovieDetailsToDB extends AsyncTask<Movie, Void, Void> {
+        @Override
+        protected Void doInBackground(Movie... movies) {
+            appDatabase.movieDao().setDetailsByImdbId(movies[0].getImdbID(),
+                    movies[0].getRated(),
+                    movies[0].getReleased(),
+                    movies[0].getRuntime(),
+                    movies[0].getGenre(),
+                    movies[0].getDirector(),
+                    movies[0].getWriter(),
+                    movies[0].getActors(),
+                    movies[0].getPlot(),
+                    movies[0].getLanguage(),
+                    movies[0].getCountry(),
+                    movies[0].getAwards(),
+                    movies[0].getImdbRating(),
+                    movies[0].getImdbVotes(),
+                    movies[0].getProduction());
+
+            return null;
+        }
+    }
+
+
     @SuppressLint("StaticFieldLeak")
     public class AsyncLoadDetailedMovieInfo extends AsyncTask<Movie, Void, Movie> {
 
         Movie movie;
-
+        boolean isLoaded;
 
         @Override
         protected void onPreExecute() {
@@ -147,45 +184,65 @@ public class MovieDetailsActivity extends AppCompatActivity {
             rated.setText(movie.getRated());
             plot.setText(movie.getPlot());
 
-
             poster.setVisibility(View.GONE);
             detailedPosterProgressBar.setVisibility(View.VISIBLE);
 
-            Picasso.get().load(movie.getPoster()).into(poster,
-                    new com.squareup.picasso.Callback() {
+            if (movie.getPosterBitmap() != null) {
+                poster.setImageBitmap(movie.getPosterBitmap());
+            } else {
+                Picasso.get().load(movie.getPoster()).into(poster,
+                        new com.squareup.picasso.Callback() {
 
-                        @Override
-                        public void onSuccess() {
-                            detailedPosterProgressBar.setVisibility(View.GONE);
-                            poster.setVisibility(View.VISIBLE);
-                        }
+                            @Override
+                            public void onSuccess() {
+                                detailedPosterProgressBar.setVisibility(View.GONE);
+                                poster.setVisibility(View.VISIBLE);
+                            }
 
-                        @Override
-                        public void onError(Exception e) {
-                            detailedPosterProgressBar.setVisibility(View.GONE);
-                            poster.setVisibility(View.VISIBLE);
+                            @Override
+                            public void onError(Exception e) {
+                                detailedPosterProgressBar.setVisibility(View.GONE);
+                                poster.setVisibility(View.VISIBLE);
 
-                            poster.setImageResource(android.R.drawable.ic_media_play);
-                        }
-                    });
-
+                                poster.setImageResource(android.R.drawable.ic_media_play);
+                            }
+                        });
+            }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.M)
         private Movie search() {
+
             String url = String.format(
                     "http://www.omdbapi.com/?apikey=%s&i=%s",
                     key,
                     movie.getImdbID());
 
             try {
-                return parseMovie(sendRequest(url));
+                movie = parseMovie(sendRequest(url));
+                loadToDatabase();
 
+            } catch (MalformedURLException e) {
+                System.err.println(String.format("Incorrect URL <%s>!", url));
+                e.printStackTrace();
+            } catch (UnknownHostException e) {
+                System.err.println("Request timeout!");
+                loadFromDatabase(imdbId);
+            } catch (IOException e) {
+                e.printStackTrace();
             } catch (ParseException e) {
                 System.err.println("Incorrect content of JSON file!");
                 e.printStackTrace();
             }
-            return null;
+            return movie;
+        }
+
+        private void loadFromDatabase(String imdbId){
+            movie = appDatabase.movieDao().getMovieByImdbId(imdbId).createMovieInfo();
+        }
+
+        private void loadToDatabase(){
+            new AsyncLoadMovieDetailsToDB().execute(movie);
         }
 
         private Movie parseMovie(String jsonText)
@@ -198,27 +255,19 @@ public class MovieDetailsActivity extends AppCompatActivity {
             return newMovie;
         }
 
-        private String sendRequest(String url) {
+        private String sendRequest(String url) throws IOException {
             StringBuilder result = new StringBuilder();
 
-            try {
-                URL getReq = new URL(url);
-                URLConnection movieConnection = getReq.openConnection();
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        movieConnection.getInputStream()));
-                String inputLine;
+            URL getReq = new URL(url);
+            URLConnection movieConnection = getReq.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    movieConnection.getInputStream()));
+            String inputLine;
 
-                while ((inputLine = in.readLine()) != null)
-                    result.append(inputLine).append("\n");
+            while ((inputLine = in.readLine()) != null)
+                result.append(inputLine).append("\n");
 
-                in.close();
-
-            } catch (MalformedURLException e) {
-                System.err.println(String.format("Incorrect URL <%s>!", url));
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            in.close();
 
             return result.toString();
         }
