@@ -2,6 +2,9 @@ package ua.kpi.compsys.io8226.tabs.tab_movies;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +18,10 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import ua.kpi.compsys.io8226.R;
-import ua.kpi.compsys.io8226.repository.App;
-import ua.kpi.compsys.io8226.repository.AppDatabase;
 import ua.kpi.compsys.io8226.tabs.tab_movies.model.Movie;
 
 
 public class AdapterMoviesList extends ArrayAdapter<String> {
-
-    private static AppDatabase appDatabase;
 
     ArrayList<Movie> movies;
     Context mContext;
@@ -32,8 +31,6 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
         super(context, R.layout.listview_item);
         this.movies = movies;
         this.mContext = context;
-
-        appDatabase = App.getInstance().getDatabase();
     }
 
 
@@ -76,32 +73,22 @@ public class AdapterMoviesList extends ArrayAdapter<String> {
                 mViewHolder.mProgressBar.setVisibility(View.VISIBLE);
 
                 ViewHolder finalMViewHolder = mViewHolder;
+                Picasso.get().load(movies.get(position).getPoster()).into(mViewHolder.mPoster,
+                        new com.squareup.picasso.Callback() {
 
-                Movie movie = movies.get(position);
+                            @Override
+                            public void onSuccess() {
+                                finalMViewHolder.mProgressBar.setVisibility(View.GONE);
+                                finalMViewHolder.mPoster.setVisibility(View.VISIBLE);
+                            }
 
-                if (movie.getPosterBitmap() != null) {
-                    mViewHolder.mPoster.setImageBitmap(movie.getPosterBitmap());
-                    mViewHolder.mProgressBar.setVisibility(View.GONE);
-                    mViewHolder.mPoster.setVisibility(View.VISIBLE);
-
-                } else {
-                    Picasso.get().load(movies.get(position).getPoster()).into(mViewHolder.mPoster,
-                            new com.squareup.picasso.Callback() {
-
-                                @Override
-                                public void onSuccess() {
-                                    finalMViewHolder.mProgressBar.setVisibility(View.GONE);
-                                    finalMViewHolder.mPoster.setVisibility(View.VISIBLE);
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-                                    e.printStackTrace();
-                                    finalMViewHolder.mProgressBar.setVisibility(View.GONE);
-                                    finalMViewHolder.mPoster.setVisibility(View.VISIBLE);
-                                }
-                            });
-                }
+                            @Override
+                            public void onError(Exception e) {
+                                e.printStackTrace();
+                                finalMViewHolder.mProgressBar.setVisibility(View.GONE);
+                                finalMViewHolder.mPoster.setVisibility(View.VISIBLE);
+                            }
+                        });
             }
 
         } catch (Resources.NotFoundException | IndexOutOfBoundsException |

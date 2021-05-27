@@ -58,7 +58,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
     TextView rated;
     TextView plot;
 
-    Movie movie;
     String imdbId;
 
 
@@ -104,7 +103,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 }
             }
 
-            movie = new Movie();
+            Movie movie = new Movie();
             movie.setImdbID(bundle.getString("imdbId"));
             imdbId = movie.getImdbID();
             System.out.println(movie.getImdbID());
@@ -143,7 +142,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
     public class AsyncLoadDetailedMovieInfo extends AsyncTask<Movie, Void, Movie> {
 
         Movie movie;
-        boolean isLoaded;
 
         @Override
         protected void onPreExecute() {
@@ -187,39 +185,36 @@ public class MovieDetailsActivity extends AppCompatActivity {
             poster.setVisibility(View.GONE);
             detailedPosterProgressBar.setVisibility(View.VISIBLE);
 
-            if (movie.getPosterBitmap() != null) {
-                poster.setImageBitmap(movie.getPosterBitmap());
-            } else {
-                Picasso.get().load(movie.getPoster()).into(poster,
-                        new com.squareup.picasso.Callback() {
+            Picasso.get().load(movie.getPoster()).into(poster,
+                    new com.squareup.picasso.Callback() {
 
-                            @Override
-                            public void onSuccess() {
-                                detailedPosterProgressBar.setVisibility(View.GONE);
-                                poster.setVisibility(View.VISIBLE);
-                            }
+                        @Override
+                        public void onSuccess() {
+                            detailedPosterProgressBar.setVisibility(View.GONE);
+                            poster.setVisibility(View.VISIBLE);
+                        }
 
-                            @Override
-                            public void onError(Exception e) {
-                                detailedPosterProgressBar.setVisibility(View.GONE);
-                                poster.setVisibility(View.VISIBLE);
+                        @Override
+                        public void onError(Exception e) {
+                            detailedPosterProgressBar.setVisibility(View.GONE);
+                            poster.setVisibility(View.VISIBLE);
 
-                                poster.setImageResource(android.R.drawable.ic_media_play);
-                            }
-                        });
-            }
+                            poster.setImageResource(android.R.drawable.ic_media_play);
+                        }
+                    });
+
         }
 
         @RequiresApi(api = Build.VERSION_CODES.M)
         private Movie search() {
-
+            Movie foundMovie = new Movie();
             String url = String.format(
                     "http://www.omdbapi.com/?apikey=%s&i=%s",
                     key,
                     movie.getImdbID());
 
             try {
-                movie = parseMovie(sendRequest(url));
+                foundMovie = parseMovie(sendRequest(url));
                 loadToDatabase();
 
             } catch (MalformedURLException e) {
@@ -227,17 +222,17 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 e.printStackTrace();
             } catch (UnknownHostException e) {
                 System.err.println("Request timeout!");
-                loadFromDatabase(imdbId);
+                loadFromDatabase(imdbId, foundMovie);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ParseException e) {
                 System.err.println("Incorrect content of JSON file!");
                 e.printStackTrace();
             }
-            return movie;
+            return foundMovie;
         }
 
-        private void loadFromDatabase(String imdbId){
+        private void loadFromDatabase(String imdbId, Movie movie){
             movie = appDatabase.movieDao().getMovieByImdbId(imdbId).createMovieInfo();
         }
 

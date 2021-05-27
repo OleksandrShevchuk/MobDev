@@ -86,8 +86,10 @@ public class FragmentMoviesList extends Fragment {
         addMovieButton = (ImageButton) view.findViewById(R.id.button_addMovieButton);
         moviesListView.setAdapter(adapterMoviesList);
 
+
         //
         // searchView.setImeOptions(searchView.getImeOptions() | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+
 
         moviesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
               @Override
