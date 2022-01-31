@@ -3,7 +3,7 @@ package ua.kpi.compsys.io8226;
 import androidx.annotation.NonNull;
 import java.util.Date;
 
-
+//
 public class TimeOS {
     int hours;
     int minutes;
